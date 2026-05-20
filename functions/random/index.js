@@ -148,7 +148,28 @@ export async function onRequest(context) {
 
         // if param 'type' is set to 'img', return the image
         if (randomType == 'img') {
-    return Response.redirect(requestUrl.origin + randomPath, 302);
+            // Return an image response
+            randomUrl = requestUrl.origin + randomPath;
+            let contentType = 'image/jpeg';
+            const imgHeaders = new Headers(responseHeaders);
+            return new Response(await fetch(randomUrl).then(res => {
+                contentType = res.headers.get('content-type');
+                return res.blob();
+            }), {
+                headers: (() => {
+                    imgHeaders.set('Content-Type', contentType || 'image/jpeg');
+                    return imgHeaders;
+                })(),
+                status: 200
+            });
+        }
+        
+        if (resType == 'text') {
+            return new Response(randomUrl, { status: 200, headers: responseHeaders });
+        } else {
+            return new Response(JSON.stringify({ url: randomUrl }), { status: 200, headers: responseHeaders });
+        }
+    }
 }
 
 async function getRandomFileList(context, url, dir) {
