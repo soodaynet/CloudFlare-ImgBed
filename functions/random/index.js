@@ -148,20 +148,7 @@ export async function onRequest(context) {
 
         // if param 'type' is set to 'img', return the image
         if (randomType == 'img') {
-            // Return an image response
-            randomUrl = requestUrl.origin + randomPath;
-            let contentType = 'image/jpeg';
-            const imgHeaders = new Headers(responseHeaders);
-            return new Response(await fetch(randomUrl).then(res => {
-                contentType = res.headers.get('content-type');
-                return res.blob();
-            }), {
-                headers: (() => {
-                    imgHeaders.set('Content-Type', contentType || 'image/jpeg');
-                    return imgHeaders;
-                })(),
-                status: 200
-            });
+            return Response.redirect(requestUrl.origin + randomPath, 302);
         }
         
         if (resType == 'text') {
